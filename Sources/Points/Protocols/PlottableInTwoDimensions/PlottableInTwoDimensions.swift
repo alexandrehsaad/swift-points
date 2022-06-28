@@ -5,8 +5,13 @@
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 
+import NumericProtocols
+
 /// Representing values that can be plotted in two dimensions.
 public protocol PlottableInTwoDimensions: Equatable {
+	/// The axis of plottable types.
+	associatedtype Axis
+	where Axis: BinaryFloatingPoint
 	
 	// MARK: - Creating Instances
 	
@@ -14,18 +19,29 @@ public protocol PlottableInTwoDimensions: Equatable {
 	///
 	/// - parameter x: The X-axis.
 	/// - parameter y: The Y-axis.
-	init(x: Double, y: Double)
+	init(x: Axis, y: Axis)
 	
 	// MARK: - Instance Properties
 	
 	/// The value for the X-axis.
-	var x: Double { get }
+	var x: Axis { get }
 	
 	/// The value for the Y-axis.
-	var y: Double { get }
+	var y: Axis { get }
 }
 
-extension PlottableInTwoDimensions {
+extension PlottableInTwoDimensions
+where Self: Addable, Axis: Addable {
+	public static func + (_ lhs: Self, _ rhs: Self) -> Self {
+		let x: Axis = lhs.x + rhs.x
+		let y: Axis = lhs.y + rhs.y
+		
+		return .init(x: x, y: y)
+	}
+}
+
+extension PlottableInTwoDimensions
+where Self: Comparable {
 	
 	// MARK: - Inspecting Values
 	
@@ -63,29 +79,41 @@ extension PlottableInTwoDimensions {
 }
 
 extension PlottableInTwoDimensions
-where Self: Addable {
-	public static func + (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x + rhs.x
-		let y: Double = lhs.y + rhs.y
+where Self: Decodable, Axis: Decodable {
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: PlottableCodingKeys.self)
+		
+		let x: Axis = try container.decode(Axis.self, forKey: .x)
+		let y: Axis = try container.decode(Axis.self, forKey: .y)
+		
+		self.init(x: x, y: y)
+	}
+}
+
+extension PlottableInTwoDimensions
+where Self: Divisible, Axis: Divisible {
+	public static func / (_ lhs: Self, _ rhs: Self) -> Self {
+		let x: Axis = lhs.x / rhs.x
+		let y: Axis = lhs.y / rhs.y
+		
+		return .init(x: x, y: y)
+	}
+	
+	public static func % (_ lhs: Self, _ rhs: Self) -> Self {
+		let x: Axis = lhs.x % rhs.x
+		let y: Axis = lhs.y % rhs.y
 		
 		return .init(x: x, y: y)
 	}
 }
 
 extension PlottableInTwoDimensions
-where Self: Divisible {
-	public static func / (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x / rhs.x
-		let y: Double = lhs.y / rhs.y
+where Self: Encodable, Axis: Encodable {
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: PlottableCodingKeys.self)
 		
-		return .init(x: x, y: y)
-	}
-	
-	public static func % (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x % rhs.x
-		let y: Double = lhs.y % rhs.y
-		
-		return .init(x: x, y: y)
+		try container.encode(self.x, forKey: .x)
+		try container.encode(self.y, forKey: .y)
 	}
 }
 
@@ -97,27 +125,27 @@ extension PlottableInTwoDimensions {
 }
 
 extension PlottableInTwoDimensions
-where Self: Multipliable {
+where Self: Multipliable, Axis: Multipliable {
 	public static func * (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x * rhs.x
-		let y: Double = lhs.y * rhs.y
+		let x: Axis = lhs.x * rhs.x
+		let y: Axis = lhs.y * rhs.y
 		
 		return .init(x: x, y: y)
 	}
 }
 
 extension PlottableInTwoDimensions
-where Self: Negateable {
+where Self: Negateable, Axis: Negateable {
 	public prefix static func - (_ operand: Self) -> Self {
-		let x: Double = operand.x.negating()
-		let y: Double = operand.y.negating()
+		let x: Axis = operand.x.negating()
+		let y: Axis = operand.y.negating()
 		
 		return .init(x: x, y: y)
 	}
 }
 
 extension PlottableInTwoDimensions
-where Self: RepresentableByZero {
+where Self: RepresentableByZero, Axis: RepresentableByZero {
 	public static var zero: Self {
 		return .init(x: .zero, y: .zero)
 	}
@@ -125,28 +153,28 @@ where Self: RepresentableByZero {
 
 extension PlottableInTwoDimensions
 where Self: Strideable {
-	public typealias Stride = Double
+	public typealias Stride = Axis
 	
-	public func advanced(by n: Double) -> Self {
-		let x: Double = self.x + n
-		let y: Double = self.y + n
+	public func advanced(by n: Axis) -> Self {
+		let x: Axis = self.x + n
+		let y: Axis = self.y + n
 		
 		return .init(x: x, y: y)
 	}
 	
-	public func distance(to other: Self) -> Double {
-		let x: Double = other.x - self.x
-		let y: Double = other.y - self.y
+	public func distance(to other: Self) -> Axis {
+		let x: Axis = other.x - self.x
+		let y: Axis = other.y - self.y
 		
-		return (x.squared() + y.squared()).squareRoot()
+		return (x * x + y * y).squareRoot()
 	}
 }
 
 extension PlottableInTwoDimensions
-where Self: Subtractable {
+where Self: Subtractable, Axis: Subtractable {
 	public static func - (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x - rhs.x
-		let y: Double = lhs.y - rhs.y
+		let x: Axis = lhs.x - rhs.x
+		let y: Axis = lhs.y - rhs.y
 		
 		return .init(x: x, y: y)
 	}

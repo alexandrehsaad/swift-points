@@ -11,9 +11,9 @@ extension Point {
 	/// - parameter range: The range in which to create a random value.
 	/// - returns: A random instance within the bounds of the range.
 	public static func random(in range: ClosedRange<Self>) -> Self {
-		let rangeX: ClosedRange<Double> = range.lowerBound.x...range.upperBound.x
-		let rangeY: ClosedRange<Double> = range.lowerBound.y...range.upperBound.y
-		let rangeZ: ClosedRange<Double> = range.lowerBound.z...range.upperBound.z
+		let rangeX: ClosedRange<Axis> = range.lowerBound.x...range.upperBound.x
+		let rangeY: ClosedRange<Axis> = range.lowerBound.y...range.upperBound.y
+		let rangeZ: ClosedRange<Axis> = range.lowerBound.z...range.upperBound.z
 		
 		return self.init(
 			x: .random(in: rangeX),

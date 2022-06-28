@@ -8,9 +8,11 @@
 /// A structure representing a point in 3-dimension.
 public struct Point {
 	
+	public typealias Axis = Double
+	
 	// MARK: - Creating Instances
 	
-	public init(x: Double, y: Double, z: Double) {
+	public init(x: Axis, y: Axis, z: Axis) {
 		self.x = x
 		self.y = y
 		self.z = z
@@ -18,9 +20,9 @@ public struct Point {
 	
 	// MARK: - Instance Properties
 	
-	public let x: Double
+	public let x: Axis
 	
-	public let y: Double
+	public let y: Axis
 	
-	public let z: Double
+	public let z: Axis
 }

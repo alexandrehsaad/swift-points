@@ -5,6 +5,8 @@
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 
+import NumericProtocols
+
 /// Representing values that can be plotted in three dimensions.
 public protocol PlottableInThreeDimensions: PlottableInTwoDimensions {
 	
@@ -15,15 +17,27 @@ public protocol PlottableInThreeDimensions: PlottableInTwoDimensions {
 	/// - parameter x: The X-axis.
 	/// - parameter y: The Y-axis.
 	/// - parameter z: The Z-axis.
-	init(x: Double, y: Double, z: Double)
+	init(x: Axis, y: Axis, z: Axis)
 	
 	// MARK: - Instance Properties
 	
 	/// The value for the Z-axis.
-	var z: Double { get }
+	var z: Axis { get }
 }
 
-extension PlottableInThreeDimensions {
+extension PlottableInThreeDimensions
+where Self: Addable, Axis: Addable {
+	public static func + (_ lhs: Self, _ rhs: Self) -> Self {
+		let x: Axis = lhs.x + rhs.x
+		let y: Axis = lhs.y + rhs.y
+		let z: Axis = lhs.z + rhs.z
+		
+		return .init(x: x, y: y, z: z)
+	}
+}
+
+extension PlottableInThreeDimensions
+where Self: Comparable {
 	
 	// MARK: - Creating Instances
 	
@@ -31,7 +45,7 @@ extension PlottableInThreeDimensions {
 	///
 	/// - parameter x: The X-axis.
 	/// - parameter y: The Y-axis.
-	public init(x: Double, y: Double) {
+	public init(x: Axis, y: Axis) {
 		self.init(x: x, y: y, z: 0)
 	}
 	
@@ -55,32 +69,45 @@ extension PlottableInThreeDimensions {
 }
 
 extension PlottableInThreeDimensions
-where Self: Addable {
-	public static func + (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x + rhs.x
-		let y: Double = lhs.y + rhs.y
-		let z: Double = lhs.z + rhs.z
+where Self: Decodable, Axis: Decodable {
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: PlottableCodingKeys.self)
+		
+		let x: Axis = try container.decode(Axis.self, forKey: .x)
+		let y: Axis = try container.decode(Axis.self, forKey: .y)
+		let z: Axis = try container.decode(Axis.self, forKey: .z)
+		
+		self.init(x: x, y: y, z: z)
+	}
+}
+
+extension PlottableInThreeDimensions
+where Self: Divisible, Axis: Divisible {
+	public static func / (_ lhs: Self, _ rhs: Self) -> Self {
+		let x: Axis = lhs.x / rhs.x
+		let y: Axis = lhs.y / rhs.y
+		let z: Axis = lhs.z / rhs.z
+		
+		return .init(x: x, y: y, z: z)
+	}
+	
+	public static func % (_ lhs: Self, _ rhs: Self) -> Self {
+		let x: Axis = lhs.x % rhs.x
+		let y: Axis = lhs.y % rhs.y
+		let z: Axis = lhs.z % rhs.z
 		
 		return .init(x: x, y: y, z: z)
 	}
 }
 
 extension PlottableInThreeDimensions
-where Self: Divisible {
-	public static func / (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x / rhs.x
-		let y: Double = lhs.y / rhs.y
-		let z: Double = lhs.z / rhs.z
+where Self: Encodable, Axis: Encodable {
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: PlottableCodingKeys.self)
 		
-		return .init(x: x, y: y, z: z)
-	}
-	
-	public static func % (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x % rhs.x
-		let y: Double = lhs.y % rhs.y
-		let z: Double = lhs.z % rhs.z
-		
-		return .init(x: x, y: y, z: z)
+		try container.encode(self.x, forKey: .x)
+		try container.encode(self.y, forKey: .y)
+		try container.encode(self.z, forKey: .z)
 	}
 }
 
@@ -93,29 +120,29 @@ extension PlottableInThreeDimensions {
 }
 
 extension PlottableInThreeDimensions
-where Self: Multipliable {
+where Self: Multipliable, Axis: Multipliable {
 	public static func * (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x * rhs.x
-		let y: Double = lhs.y * rhs.y
-		let z: Double = lhs.z * rhs.z
+		let x: Axis = lhs.x * rhs.x
+		let y: Axis = lhs.y * rhs.y
+		let z: Axis = lhs.z * rhs.z
 		
 		return .init(x: x, y: y, z: z)
 	}
 }
 
 extension PlottableInThreeDimensions
-where Self: Negateable {
+where Self: Negateable, Axis: Negateable {
 	public prefix static func - (_ operand: Self) -> Self {
-		let x: Double = operand.x.negating()
-		let y: Double = operand.y.negating()
-		let z: Double = operand.z.negating()
+		let x: Axis = operand.x.negating()
+		let y: Axis = operand.y.negating()
+		let z: Axis = operand.z.negating()
 		
 		return .init(x: x, y: y, z: z)
 	}
 }
 
 extension PlottableInThreeDimensions
-where Self: RepresentableByZero {
+where Self: RepresentableByZero, Axis: RepresentableByZero {
 	public static var zero: Self {
 		return .init(x: .zero, y: .zero, z: .zero)
 	}
@@ -123,31 +150,31 @@ where Self: RepresentableByZero {
 
 extension PlottableInThreeDimensions
 where Self: Strideable {
-	public typealias Stride = Double
+	public typealias Stride = Axis
 	
-	public func advanced(by n: Double) -> Self {
-		let x: Double = self.x + n
-		let y: Double = self.y + n
-		let z: Double = self.z + n
+	public func advanced(by n: Axis) -> Self {
+		let x: Axis = self.x + n
+		let y: Axis = self.y + n
+		let z: Axis = self.z + n
 		
 		return .init(x: x, y: y, z: z)
 	}
 	
-	public func distance(to other: Self) -> Double {
-		let x: Double = other.x - self.x
-		let y: Double = other.y - self.y
-		let z: Double = other.z - self.z
+	public func distance(to other: Self) -> Axis {
+		let x: Axis = other.x - self.x
+		let y: Axis = other.y - self.y
+		let z: Axis = other.z - self.z
 		
-		return (x.squared() + y.squared() + z.squared()).squareRoot()
+		return (x * x + y * y + z * z).squareRoot()
 	}
 }
 
 extension PlottableInThreeDimensions
-where Self: Subtractable {
+where Self: Subtractable, Axis: Subtractable {
 	public static func - (_ lhs: Self, _ rhs: Self) -> Self {
-		let x: Double = lhs.x - rhs.x
-		let y: Double = lhs.y - rhs.y
-		let z: Double = lhs.z - rhs.z
+		let x: Axis = lhs.x - rhs.x
+		let y: Axis = lhs.y - rhs.y
+		let z: Axis = lhs.z - rhs.z
 		
 		return .init(x: x, y: y, z: z)
 	}
