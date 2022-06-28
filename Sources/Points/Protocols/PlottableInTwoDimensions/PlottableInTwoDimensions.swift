@@ -8,8 +8,8 @@
 import NumericProtocols
 
 /// Representing values that can be plotted in two dimensions.
-public protocol PlottableInTwoDimensions: Equatable {
-	/// The axis of plottable types.
+public protocol PlottableInTwoDimensions {
+	/// The axis.
 	associatedtype Axis
 	where Axis: BinaryFloatingPoint
 	
@@ -117,7 +117,8 @@ where Self: Encodable, Axis: Encodable {
 	}
 }
 
-extension PlottableInTwoDimensions {
+extension PlottableInTwoDimensions
+where Self: Equatable {
 	public static func == (_ lhs: Self, _ rhs: Self) -> Bool {
 		return lhs.x == rhs.x
 			&& lhs.y == rhs.y

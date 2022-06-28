@@ -111,7 +111,8 @@ where Self: Encodable, Axis: Encodable {
 	}
 }
 
-extension PlottableInThreeDimensions {
+extension PlottableInThreeDimensions
+where Self: Equatable {
 	public static func == (_ lhs: Self, _ rhs: Self) -> Bool {
 		return lhs.x == rhs.x
 			&& lhs.y == rhs.y

@@ -29,7 +29,7 @@ The Swift Package Manager is a tool for managing the distribution of Swift code 
 		...
 		targets: [
 			.target(name: "MyTarget", dependencies: [
-				.product(name: "Plots", package: "swift-points")
+				.product(name: "Points", package: "swift-points")
 			]),
 		],
 		...
@@ -38,5 +38,5 @@ The Swift Package Manager is a tool for managing the distribution of Swift code 
 3. Import the package in your source code.
 
 	```swift
-	import Plots
+	import Points
 	```

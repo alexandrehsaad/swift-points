@@ -7,7 +7,7 @@
 
 /// A structure representing a point in 3-dimension.
 public struct Point {
-	
+	/// The axis.
 	public typealias Axis = Double
 	
 	// MARK: - Creating Instances
