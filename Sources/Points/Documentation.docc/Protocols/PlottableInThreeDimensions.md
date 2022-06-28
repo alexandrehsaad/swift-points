@@ -1,4 +1,4 @@
-# ``NumericProtocols/PlottableInThreeDimensions``
+# ``Points/PlottableInThreeDimensions``
 
 ## Topics
 

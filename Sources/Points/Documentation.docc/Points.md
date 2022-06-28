@@ -17,3 +17,7 @@ No overview available.
 
 - ``PlottableInTwoDimensions``
 - ``PlottableInThreeDimensions``
+
+### New Points
+
+- ``Point``
