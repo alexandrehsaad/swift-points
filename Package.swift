@@ -1,28 +1,39 @@
-// swift-tools-version: 5.6
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version:5.6
 
 import PackageDescription
 
-let package = Package(
-    name: "swift-plots",
-    products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(
-            name: "swift-plots",
-            targets: ["swift-plots"]),
-    ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(
-            name: "swift-plots",
-            dependencies: []),
-        .testTarget(
-            name: "swift-plotsTests",
-            dependencies: ["swift-plots"]),
-    ]
+let package: Package = .init(
+	name: "swift-points",
+	defaultLocalization: "en",
+	platforms: [
+		.iOS(.v13),
+		.macCatalyst(.v15),
+		.macOS(.v10_15),
+		.watchOS(.v6)
+	],
+	products: [
+		.library(name: "Points", targets: ["Points"])
+	],
+	dependencies: [
+		.package(url: "https://github.com/alexandrehsaad/swift-numeric-protocols.git", branch: "main"),
+		.package(url: "https://github.com/apple/swift-docc-plugin.git", .upToNextMinor(from: "1.0.0"))
+	],
+	targets: [
+		.target(
+			name: "Points",
+			dependencies: [
+				.product(name: "NumericProtocols", package: "swift-numeric-protocols")
+			],
+			path: "Sources"
+		),
+		.testTarget(
+			name: "PlotsTests",
+			dependencies: ["Points"],
+			path: "Tests",
+			resources: [
+				.process("PlotsTests/Resources")
+			]
+		)
+	],
+	swiftLanguageVersions: [.v5]
 )
