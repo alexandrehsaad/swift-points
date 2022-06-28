@@ -25,6 +25,12 @@ public protocol PlottableInThreeDimensions: PlottableInTwoDimensions {
 	var z: Axis { get }
 }
 
+extension PlottableInThreeDimensions {
+	public init(x: Axis, y: Axis) {
+		self.init(x: x, y: y, z: 0)
+	}
+}
+
 extension PlottableInThreeDimensions
 where Self: Addable, Axis: Addable {
 	public static func + (_ lhs: Self, _ rhs: Self) -> Self {
@@ -38,16 +44,6 @@ where Self: Addable, Axis: Addable {
 
 extension PlottableInThreeDimensions
 where Self: Comparable {
-	
-	// MARK: - Creating Instances
-	
-	/// Creates a new instance with the specified axes.
-	///
-	/// - parameter x: The X-axis.
-	/// - parameter y: The Y-axis.
-	public init(x: Axis, y: Axis) {
-		self.init(x: x, y: y, z: 0)
-	}
 	
 	// MARK: - Inspecting Values
 	
